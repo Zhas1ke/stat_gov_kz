@@ -5,11 +5,31 @@ import glob
 import os
 import xlrd
 
+# Корневая папка
 root = os.path.dirname(os.path.abspath(__file__))
+
 archives_directory = ''.join([root, '\\archives'])
 excels_directory = ''.join([root, '\\excels'])
 csv_directory = ''.join([root, '\\csv'])
-ids = [str(id) for id in [17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34]]
+
+# ID регионов
+ids = [str(id) for id in [	'ESTAT086117',
+							'ESTAT086118',
+							'ESTAT086119',
+							'ESTAT086120',
+							'ESTAT086121',
+							'ESTAT086123',
+							'ESTAT086124',
+							'ESTAT086125',
+							'ESTAT086126',
+							'ESTAT086127',
+							'ESTAT086128',
+							'ESTAT086129',
+							'ESTAT086131',
+							'ESTAT086132',
+							'ESTAT086133',
+							'ESTAT086134',
+							'ESTAT267724']]
 
 def download_data():
     if not os.path.exists(archives_directory):
@@ -17,7 +37,7 @@ def download_data():
 
     print ('\nDownloading data ...')
     for i in ids:
-        url = ''.join(['http://stat.gov.kz/getImg?id=ESTAT0861', i])
+        url = ''.join(['http://stat.gov.kz/api/getFile/?docId=', i])
         print (url)
         file = ''.join([archives_directory, '\\', i, '.zip'])
 
@@ -52,10 +72,12 @@ def parse_data():
         ef = xlrd.open_workbook(f)
         cnt_sh = len(ef.sheet_names())
         for cnt in list(range(0,(cnt_sh))):
-            df = pd.read_excel(f, sheetname = cnt, index_col=None, skiprows=3)
+            df = pd.read_excel(f, sheet_name = cnt, index_col=None, skiprows=3)
             all_data = all_data.append(df, ignore_index=True)
-    all_data.to_csv(''.join([csv_directory, '\\', 'bin.csv']), sep=';', encoding = 'utf8')
 
+    all_data.to_csv(''.join([csv_directory, '\\', 'bin.csv']), sep=';', encoding = 'utf8')
+    all_data.to_excel(''.join([csv_directory, '\\', 'bin.xlsx']))
+    
 download_data()
 unzip_data()
 parse_data()
